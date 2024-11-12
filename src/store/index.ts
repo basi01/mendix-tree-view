@@ -379,7 +379,7 @@ export class NodeStore {
         const walkTree = (branch: arrayToTree.Tree<TreeObject>): void => {
             if (branch.children) {
                 const entry = this.findEntry(branch.guid);
-                if (entry) {
+                if (entry && !entry.isExpanded) {
                     entry.setExpanded(true);
                 }
                 branch.children.forEach((child: Tree<TreeObject>) => walkTree(child));

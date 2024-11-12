@@ -66,12 +66,13 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
         }
 
         if (searchEnabled) {
+            const delayedSearch = debounce((str: string) => {
+                store.search(str);
+            }, 800);
             const onSearch = (event: React.ChangeEvent<HTMLInputElement>): void => {
                 if (event.target) {
                     const val = event.target.value;
-                    debounce((str: string) => {
-                        store.search(str);
-                    }, 200)(val);
+                    delayedSearch(val);
                 }
             };
             const disabled = store.isLoading;
@@ -83,7 +84,7 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
                         loading={disabled}
                         allowClear
                         onChange={onSearch}
-                        value={store.searchQuery}
+                        defaultValue={store.searchQuery}
                     />
                 </div>
             );
