@@ -2,16 +2,21 @@ import { Component, ReactNode, createElement, MouseEvent } from "react";
 import { observer } from "mobx-react";
 import { Tree as ArrayTree } from "array-to-tree";
 import classNames from "classnames";
+
 import { Key } from "antd/es/table/interface";
 import { EventDataNode, DataNode } from "antd/es/tree";
 import { Tree, Spin, Input, Empty } from "antd";
 import { CaretDownFilled } from "@ant-design/icons";
+
 import debounce from "debounce";
+
 const { Search } = Input;
+
 import { NodeStore } from "../store/index";
 import { TreeObject } from "../store/objects/entry";
 import { ClickCellType } from "../utils/titlehelper";
 import { Alerts } from "./Alerts";
+
 export interface TreeViewComponentProps {
     store: NodeStore;
     draggable: boolean;
@@ -24,12 +29,15 @@ export interface TreeViewComponentProps {
     className: string;
     switcherBg: string;
 }
+
 @observer
 export class TreeViewComponent extends Component<TreeViewComponentProps> {
     render(): ReactNode {
         const { store, className } = this.props;
+
         const containerClass = classNames("treeview-widget", className);
         const spinnerClass = classNames("treeview-widget-spinner");
+
         return (
             <div className={containerClass}>
                 {this.renderControl()}
@@ -39,11 +47,13 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
             </div>
         );
     }
+
     componentWillMount(): void {
         if (this.props.switcherBg) {
             document.documentElement.style.setProperty("--switcher-icon-bg", this.props.switcherBg);
         }
     }
+
     componentWillUnmount(): void {
         document.documentElement.style.removeProperty("--switcher-icon-bg");
     }
@@ -69,12 +79,14 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
 
     private renderControl(): ReactNode {
         const { store, searchEnabled } = this.props;
+
         if (store.disabled) {
             return null;
         }
-        if (searchEnabled) {
 
+        if (searchEnabled) {
             const disabled = store.isLoading;
+
             return (
                 <div className={classNames("treeview-widget-control")}>
                     <Search
@@ -86,6 +98,7 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
                 </div>
             );
         }
+
         return <div></div>;
         // return (
         //     <div>
@@ -94,18 +107,23 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
         //     </div>
         // )
     }
+
     private renderTree(): ReactNode {
         const { store, draggable, showIcon, showLine } = this.props;
         const { validationMessages, removeValidationMessage, expandedKeys } = store;
         const treeClass = classNames("treeview-widget-tree");
+
         if (store.disabled) {
             return <Alerts validationMessages={validationMessages} remove={removeValidationMessage} />;
         }
+
         if (store.entryTree.length === 0 && !store.isLoading) {
             return <Empty />;
         }
+
         const expanded = [...expandedKeys];
         const treeData = [...this.getTreeNodes(store.entryTree)];
+
         return (
             <Tree
                 className={treeClass}
@@ -123,6 +141,7 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
             />
         );
     }
+
     private getTreeNodes(data: ArrayTree<TreeObject>[]): DataNode[] {
         const { iconIsGlyphicon } = this.props;
         return data.map(item => {
@@ -135,9 +154,11 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
                 item.expanded ? "treenode-expanded" : "",
                 item.icon ? "has-icon" : ""
             );
+
             if (item.icon) {
                 icon = <span className={iconIsGlyphicon ? "glyphicon glyphicon-" + item.icon : item.icon} />;
             }
+
             const dataNode: DataNode = {
                 key: item.guid,
                 icon,
@@ -145,13 +166,16 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
                 isLeaf,
                 className: extraClass
             };
+
             if (item.children && item.children.length > 0 && typeof item.children[0] !== "string") {
                 const children = this.getTreeNodes(item.children);
                 dataNode.children = children;
             }
+
             return dataNode;
         });
     }
+
     private onDrop(info: {
         event: React.MouseEvent;
         node: EventDataNode;
@@ -165,6 +189,7 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
         }
         this.props.store.switchEntryParent(info.dragNode.key as string, info.node.key as string);
     }
+
     private handleClick(
         clickType: ClickCellType
     ): (_evt: MouseEvent<Element, globalThis.MouseEvent>, node: EventDataNode) => void {
@@ -182,6 +207,7 @@ export class TreeViewComponent extends Component<TreeViewComponentProps> {
             }
         };
     }
+
     private onExpand(
         _expandedKeys: React.ReactText[],
         info: {

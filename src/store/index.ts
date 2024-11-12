@@ -130,7 +130,6 @@ export class NodeStore {
         if (this.searchHandler === null || this.searchQuery == query) {
             return;
         }
-
         this.setLoading(true);
         this.searchQuery = query;
         const objects: mendix.lib.MxObject[] | null = yield this.searchHandler(query);
@@ -285,7 +284,7 @@ export class NodeStore {
     setLoading(state: boolean): void {
         this.isLoading = state;
     }
-    
+
     // Dimensions
 
     @action
